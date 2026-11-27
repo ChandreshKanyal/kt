@@ -1,0 +1,140 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Version="28" AppVersion="5.8.1.2" ReadKey="readkey.jA5UUEpa7jo=.1a+dhzGi1gzph8tJBEQDoA==.tPnUhTLabjGYSrZCsWkOqiuZWX68dkS8fiZJCE227nLEWKzbZe2MIKxGw4czpbapVSmVVUdZMwCzHpXbO5Ilnzu/nb+jLGw1rK/pwMwTK0k=.OiosWrQltnUcf6ySw56B7qaUQ0aKwR8pVaSNOAPI1Iw=." WriteKeyPublic="BgIAAACkAABSU0ExAAgAAAEAAQC5jU8hS7ZJdie/K7AHS0W+aTHP+dNyQt8636DEzaAY9ligAhVrjlQIRyXTu22Rfr3KN9iT/Cf91M+2qvzgrTjoSmnDNhTjFXDaWNI+HxmrmXYMKSYRNLgAsavCdP3NLR69b/YEyma7cpa7E8W/CgMauD3dmP4a5oXxhU4/oRkdMhfIR6zDv2uY5Ug8Z5xDbnIaTtiKIZH65sPschNPXIBKnH/OfaetWTlA8fGS7rJIa7P3fNNetuwtKlRKERZ8Joo+5InH6BPisnTxT34Z4AjssUlof84ln7f4dvkKpTnozrK+HCrBdlutmQLKX9qEQ7pHuNEF8PY+ROe1/pDAiNOa" StartModuleName="Main" EditedBy="ASL\chandresh.kanyal" LastEdited="2024-10-18T10:19:43.6406279Z" ComplexityLevel="Beginner" Signature="n1HPBSnAX76JMLl35+Dbw8sTZ2/KsjDh0nI5fV91XIk=">
+  <Modules>
+    <Module Name="Main" AutoRun="true" SelectedGroupName="Group 1">
+      <Groups>
+        <Group Name="Group 1">
+          <ModelObjects>
+            <Table Name="Payments Program Analysis" Left="741" Top="244" Width="512" Height="159" IsMinimized="false" ActiveActionIndex="6">
+              <Actions>
+                <DeriveTableAction SourceTableName="public.flat_rate_pricing 1" IsConditional="false" />
+                <AddColumnsAction ColumnExistsOption="Rename">
+                  <Columns>
+                    <NameExpressionPair Name="Average Transaction Amount">
+                      <Expression Value="if([revenue] &gt;[share_of_net_revenue],[total_net_revenue],[total_processing_cost])" Type="Expression" />
+                    </NameExpressionPair>
+                  </Columns>
+                  <InsertPosition Position="AfterColumn" AfterColumnName="revenue_effective_rate" />
+                </AddColumnsAction>
+                <AddColumnsAction ColumnExistsOption="Rename">
+                  <Columns>
+                    <NameExpressionPair Name="Total Interchangable Cost">
+                      <Expression Value="(([revenue] +[revenue_effective_rate]) -[payment_partner_cost_effective_rate] +[Average Transaction Amount]*[total_card_transactions_per_year]) /100000" Type="Expression" />
+                    </NameExpressionPair>
+                  </Columns>
+                  <InsertPosition Position="AfterColumn" AfterColumnName="total_processing_cost" />
+                </AddColumnsAction>
+                <AddColumnsAction ColumnExistsOption="Rename">
+                  <Columns>
+                    <NameExpressionPair Name="Percentage Per Volume">
+                      <Expression Value="if(([revenue_effective_rate] -[avg_transaction_amount]) *[cost_effective_rate] -[avg_transaction_amount] &gt;= [avg_card_processing_volume_per_mid_per_year] *[payment_partner_cost_effective_rate], [Total Interchangable Cost]/[Average Transaction Amount], [Total Interchangable Cost]/290000)" Type="Expression" />
+                    </NameExpressionPair>
+                  </Columns>
+                  <InsertPosition Position="AfterColumn" AfterColumnName="cost_effective_rate" />
+                </AddColumnsAction>
+                <KeepRemoveColumnsAction Mode="Keep">
+                  <ColumnNames>
+                    <Item>provider</Item>
+                    <Item>Average Transaction Amount</Item>
+                    <Item>Total Interchangable Cost</Item>
+                    <Item>Percentage Per Volume</Item>
+                  </ColumnNames>
+                </KeepRemoveColumnsAction>
+                <UnpivotAction>
+                  <ExceptColumnNames>
+                    <Item>provider</Item>
+                  </ExceptColumnNames>
+                </UnpivotAction>
+                <PivotAction LabelsColumnName="provider" DataColumnName="Data" Aggregation="Any" PreserveFormatting="false" />
+              </Actions>
+              <AnalysisView LayoutMode="Filters" />
+            </Table>
+            <Table Name="public.flat_rate_pricing 1" Left="0" Top="0" Width="939" Height="169" IsMinimized="false" ActiveActionIndex="1">
+              <Actions>
+                <ImportSqlAction QueryLocationType="VisualEditor">
+                  <Query Version="7" AppVersion="5.8.1.2" QueryType="QueryBuilder" UseEmbeddedParameters="false" WindowWidth="1070" WindowHeight="600" QueryBuilderObjectsAreaWidth="255" QueryBuilderFiltersAreaHeight="250">
+                    <DataConnectorDefinition IsShared="true" Type="List" Name="Trial_Run" />
+                    <QueryModel WhereConditionType="ConditionBuilder" HavingConditionType="ConditionBuilder" SelectAllRows="true" UseDistinct="false" AutoPreview="true" PreviewRows="100" PreFilterColumnValues="true">
+                      <TableName Value="public.flat_rate_pricing" Type="List" />
+                      <SelectItems>
+                        <SqlSelectItem Type="Column" Name="provider" ColumnType="Text" />
+                        <SqlSelectItem Type="Column" Name="revenue" ColumnType="Number" />
+                        <SqlSelectItem Type="Column" Name="revenue_effective_rate" ColumnType="Number" />
+                        <SqlSelectItem Type="Column" Name="total_processing_cost" ColumnType="Number" />
+                        <SqlSelectItem Type="Column" Name="cost_effective_rate" ColumnType="Number" />
+                        <SqlSelectItem Type="Column" Name="cost_from_payment_partner" ColumnType="Number" />
+                        <SqlSelectItem Type="Column" Name="payment_partner_cost_effective_rate" ColumnType="Number" />
+                        <SqlSelectItem Type="Column" Name="total_net_revenue" ColumnType="Number" />
+                        <SqlSelectItem Type="Column" Name="net_revenue_effective_rate" ColumnType="Number" />
+                        <SqlSelectItem Type="Column" Name="share_of_net_revenue" ColumnType="Number" />
+                        <SqlSelectItem Type="Column" Name="net_revenue_effective_rate_anddone" ColumnType="Number" />
+                      </SelectItems>
+                      <Expressions />
+                      <WhereConditionTree />
+                      <HavingConditionTree />
+                    </QueryModel>
+                    <Parameters />
+                  </Query>
+                </ImportSqlAction>
+                <MergeAction SecondTableName="public.metrics_fees 1" SecondTableExists="true" MergeMode="FullJoin">
+                  <Columns>
+                    <Item>avg_transaction_amount</Item>
+                    <Item>avg_card_transactions_per_mid_per_year</Item>
+                    <Item>avg_card_processing_volume_per_mid_per_year</Item>
+                    <Item>total_card_transactions_per_year</Item>
+                    <Item>total_card_volume_per_year</Item>
+                  </Columns>
+                  <MatchingColumns>
+                    <NamePair Name1="provider" Name2="provider" />
+                  </MatchingColumns>
+                </MergeAction>
+              </Actions>
+              <AnalysisView LayoutMode="Filters" />
+            </Table>
+            <Table Name="public.metrics_fees 1" Left="0" Top="227" Width="451" Height="183" IsMinimized="false" ActiveActionIndex="0">
+              <Actions>
+                <ImportSqlAction QueryLocationType="VisualEditor">
+                  <Query Version="7" AppVersion="5.8.1.2" QueryType="QueryBuilder" UseEmbeddedParameters="false" WindowWidth="1070" WindowHeight="600" QueryBuilderObjectsAreaWidth="255" QueryBuilderFiltersAreaHeight="250">
+                    <DataConnectorDefinition IsShared="true" Type="List" Name="Trial_Run" />
+                    <QueryModel WhereConditionType="ConditionBuilder" HavingConditionType="ConditionBuilder" SelectAllRows="true" UseDistinct="false" AutoPreview="true" PreviewRows="100" PreFilterColumnValues="true">
+                      <TableName Value="public.metrics_fees" Type="List" />
+                      <SelectItems>
+                        <SqlSelectItem Type="Column" Name="provider" ColumnType="Text" />
+                        <SqlSelectItem Type="Column" Name="avg_transaction_amount" ColumnType="Number" />
+                        <SqlSelectItem Type="Column" Name="avg_card_transactions_per_mid_per_year" ColumnType="Number" />
+                        <SqlSelectItem Type="Column" Name="avg_card_processing_volume_per_mid_per_year" ColumnType="Number" />
+                        <SqlSelectItem Type="Column" Name="total_card_transactions_per_year" ColumnType="Number" />
+                        <SqlSelectItem Type="Column" Name="total_card_volume_per_year" ColumnType="Number" />
+                      </SelectItems>
+                      <Expressions />
+                      <WhereConditionTree />
+                      <HavingConditionTree />
+                    </QueryModel>
+                    <Parameters />
+                  </Query>
+                </ImportSqlAction>
+              </Actions>
+              <AnalysisView LayoutMode="Filters" />
+            </Table>
+          </ModelObjects>
+        </Group>
+      </Groups>
+      <Parameters />
+      <Report UseCustomFileNameForPdfExport="false" ShowPageBorders="true">
+        <Pages>
+          <Page Name="Page 1" IncludeInReport="true">
+            <ReportObjects>
+              <ReportTable Left="138" Top="95" Width="501" Height="152" ShowTitle="true" ShowAnnotation="false" ModelObjectName="Payments Program Analysis" TotalsLabel="Total">
+                <Columns />
+                <ColumnTotals />
+              </ReportTable>
+            </ReportObjects>
+          </Page>
+        </Pages>
+        <PageSetup Orientation="Landscape" Margin="Narrow" Size="Letter" />
+      </Report>
+    </Module>
+  </Modules>
+  <ProtectedDataConnectors />
+  <Resources />
+</Project>

@@ -1,0 +1,62 @@
+# kt-handover repository: what is NOT stored in git.
+# Every excluded item is listed with its reason in MISSING_FILES.md.
+
+# --- Projects that live in their own GitHub repositories ---
+/Dedupe/
+/Projects/Video Analytics/Surveillance/
+/Projects/Archive/Video-Analytics/
+/Projects/Archive/UPSRTC/transitCodes/
+
+# --- Credentials and secrets ---
+/Access/Credentials/
+/Projects/LIC/*.ovpn
+/Projects/Archive/Presentation/Oracle Credentials.txt
+/Projects/Archive/Presentation/Original.pptx
+/Projects/Archive/UPSRTC/scripts_later_version_ORIGINAL.zip
+.env
+*.pem
+*.key
+
+# --- Personal data (customers, citizens, staff, private accounts) ---
+/Projects/LIC/data-*.zip
+/Projects/LIC/trial.pdf
+/Projects/LIC/Character Dataset/images/
+/Projects/Proposal Forms Scan/*.pdf
+!/Projects/Proposal Forms Scan/Empty Form.pdf
+/Projects/Archive/OAC/Enrollment_detailed_data.csv
+/Projects/Archive/OAC/Enrollment First Sheet Data.zip
+/Projects/Archive/OAC/postgresql-*.log
+/Projects/Archive/EBA Docs/all_anomalies_with_rules*.csv
+/Projects/Archive/EBA Docs/anomaly_results_route_225.csv
+/Projects/Archive/EBA Docs/final_unexplained_anomalies.csv
+/Projects/Archive/EBA Docs/sagemaker-ai-workshop-*.csv
+/Projects/Archive/Scraper/Log Scraper/User-IP.xlsx
+/Projects/Archive/UPSRTC/Superset.html
+/Projects/Archive/UPSRTC/Superset_files/
+
+# --- Confidential finance documents ---
+/scraper2.0/FW_ Redington Working Period April-26/
+/Projects/Archive/Scraper/December Invoices/
+/Projects/Archive/Scraper/March Invoices/
+/Projects/Archive/Scraper/March Invoices.zip
+/Projects/Archive/Scraper/Redington India Ltd Calulation.xlsx
+
+# --- Too large for GitHub / old build output ---
+/Projects/Archive/Scraper/pdf_scraper.zip
+/Projects/Archive/Scraper/pdf_scraper/
+
+# --- Machine-local and re-creatable ---
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.venv/
+venv/
+node_modules/
+*.lnk
+/Projects/Databricks Demo/.claude/
+desktop.ini
+Thumbs.db
+
+# --- Keep the scraper .exe bundle complete (generic patterns above must not strip it) ---
+!/scraper2.0/scraper/_internal/certifi/cacert.pem
+!/scraper2.0/scraper/_internal/jedi/third_party/typeshed/stdlib/3/venv/

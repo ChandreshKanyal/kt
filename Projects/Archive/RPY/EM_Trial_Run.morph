@@ -1,0 +1,188 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Version="28" AppVersion="5.8.1.2" ReadKey="readkey.jaGs00i+/sQ=.fUQM12DIT1Sgz0saf8kCfQ==.3DFYEbzk+/WLkEVqRbJ9Uod9aQr8lZw7lUbN4hVMl43peZl90nb50qeU/rZLGxSaza84k3HLrirxl8gPp8aPvZsNF1som3YfhezkXFXdxFw=.qNSQLBWBmnrHLt+voeY8ig1XV8oZIJ1GQhmlGE5KajE=." WriteKeyPublic="BgIAAACkAABSU0ExAAgAAAEAAQDdjyjUBqCq380dSdFyictpRGZfTfV/o5glc7Og6K5d8NOJMORxBgwIWU2kkgLZ/cFZsy8bAwciaCc6bH6Mdw7mdVO6SVKoGXDgV/zevBJ95LlGRSfI4bAplq0qcpw9rzsEoNMP0djnSKyJSEIqFHYFFUpS2zzLW8nBlJgdsH3nLy4p+IdLkW39kGanFlF7a67xyE7Rm2peaexukJUwbMPaVElERLJspiAFtp/2xmwPis8pVSVgN6xBUX579PJpCCtj1Hu5dPQnp6BwLmiuO+oudAAybIVxZzB8Yi6zI4uIApwZCRn3JyOyfjCNyXiw0p7Z1/zY9DUwDJ5914IREUu0" StartModuleName="Main" EditedBy="ASL\chandresh.kanyal" LastEdited="2024-10-18T12:05:49.1170688Z" ComplexityLevel="Beginner" Signature="n/4Uou2n+A6iULDYgE4k9p48pradzqOii6FYJ3TRY44=">
+  <Modules>
+    <Module Name="Main" AutoRun="true" SelectedGroupName="Group 1">
+      <Groups>
+        <Group Name="Group 1" Left="20" Top="20">
+          <ModelObjects>
+            <Table Name="public.flat_rate_pricing 1" Left="92" Top="143" Width="929" Height="164" IsMinimized="false" ActiveActionIndex="1">
+              <Actions>
+                <ImportSqlAction QueryLocationType="VisualEditor">
+                  <Query Version="7" AppVersion="5.8.1.2" QueryType="QueryBuilder" UseEmbeddedParameters="false" WindowWidth="1070" WindowHeight="600" QueryBuilderObjectsAreaWidth="255" QueryBuilderFiltersAreaHeight="250">
+                    <DataConnectorDefinition IsShared="true" Type="List" Name="postgres_trial" />
+                    <QueryModel WhereConditionType="ConditionBuilder" HavingConditionType="ConditionBuilder" SelectAllRows="true" UseDistinct="false" AutoPreview="true" PreviewRows="100" PreFilterColumnValues="true">
+                      <TableName Value="public.flat_rate_pricing" Type="List" />
+                      <SelectItems>
+                        <SqlSelectItem Type="Column" Name="provider" ColumnType="Text" />
+                        <SqlSelectItem Type="Column" Name="revenue" ColumnType="Number" />
+                        <SqlSelectItem Type="Column" Name="revenue_effective_rate" ColumnType="Number" />
+                        <SqlSelectItem Type="Column" Name="total_processing_cost" ColumnType="Number" />
+                        <SqlSelectItem Type="Column" Name="cost_effective_rate" ColumnType="Number" />
+                        <SqlSelectItem Type="Column" Name="cost_from_payment_partner" ColumnType="Number" />
+                        <SqlSelectItem Type="Column" Name="payment_partner_cost_effective_rate" ColumnType="Number" />
+                        <SqlSelectItem Type="Column" Name="total_net_revenue" ColumnType="Number" />
+                        <SqlSelectItem Type="Column" Name="net_revenue_effective_rate" ColumnType="Number" />
+                        <SqlSelectItem Type="Column" Name="share_of_net_revenue" ColumnType="Number" />
+                        <SqlSelectItem Type="Column" Name="net_revenue_effective_rate_anddone" ColumnType="Number" />
+                      </SelectItems>
+                      <Expressions />
+                      <WhereConditionTree />
+                      <HavingConditionTree />
+                      <KnownDataTypes>
+                        <Item Name="provider" IsExpression="false" DataType="Text" />
+                        <Item Name="revenue" IsExpression="false" DataType="Number" />
+                        <Item Name="revenue_effective_rate" IsExpression="false" DataType="Number" />
+                        <Item Name="total_processing_cost" IsExpression="false" DataType="Number" />
+                        <Item Name="cost_effective_rate" IsExpression="false" DataType="Number" />
+                        <Item Name="cost_from_payment_partner" IsExpression="false" DataType="Number" />
+                        <Item Name="payment_partner_cost_effective_rate" IsExpression="false" DataType="Number" />
+                        <Item Name="total_net_revenue" IsExpression="false" DataType="Number" />
+                        <Item Name="net_revenue_effective_rate" IsExpression="false" DataType="Number" />
+                        <Item Name="share_of_net_revenue" IsExpression="false" DataType="Number" />
+                        <Item Name="net_revenue_effective_rate_anddone" IsExpression="false" DataType="Number" />
+                      </KnownDataTypes>
+                    </QueryModel>
+                    <Parameters />
+                  </Query>
+                </ImportSqlAction>
+                <MergeAction SecondTableName="public.metrics_fees 1" SecondTableExists="true" MergeMode="FullJoin">
+                  <Columns>
+                    <Item>avg_transaction_amount</Item>
+                    <Item>avg_card_transactions_per_mid_per_year</Item>
+                    <Item>avg_card_processing_volume_per_mid_per_year</Item>
+                    <Item>total_card_transactions_per_year</Item>
+                    <Item>total_card_volume_per_year</Item>
+                  </Columns>
+                  <MatchingColumns>
+                    <NamePair Name1="provider" Name2="provider" />
+                  </MatchingColumns>
+                </MergeAction>
+              </Actions>
+              <AnalysisView LayoutMode="Filters" />
+            </Table>
+            <Table Name="public.metrics_fees 1" Left="325" Top="0" Width="505" Height="131" IsMinimized="false" ActiveActionIndex="0">
+              <Actions>
+                <ImportSqlAction QueryLocationType="VisualEditor">
+                  <Query Version="7" AppVersion="5.8.1.2" QueryType="QueryBuilder" UseEmbeddedParameters="false" WindowWidth="1070" WindowHeight="600" QueryBuilderObjectsAreaWidth="255" QueryBuilderFiltersAreaHeight="250">
+                    <DataConnectorDefinition IsShared="true" Type="List" Name="postgres_trial" />
+                    <QueryModel WhereConditionType="ConditionBuilder" HavingConditionType="ConditionBuilder" SelectAllRows="true" UseDistinct="false" AutoPreview="true" PreviewRows="100" PreFilterColumnValues="true">
+                      <TableName Value="public.metrics_fees" Type="List" />
+                      <SelectItems>
+                        <SqlSelectItem Type="Column" Name="provider" ColumnType="Text" />
+                        <SqlSelectItem Type="Column" Name="avg_transaction_amount" ColumnType="Number" />
+                        <SqlSelectItem Type="Column" Name="avg_card_transactions_per_mid_per_year" ColumnType="Number" />
+                        <SqlSelectItem Type="Column" Name="avg_card_processing_volume_per_mid_per_year" ColumnType="Number" />
+                        <SqlSelectItem Type="Column" Name="total_card_transactions_per_year" ColumnType="Number" />
+                        <SqlSelectItem Type="Column" Name="total_card_volume_per_year" ColumnType="Number" />
+                      </SelectItems>
+                      <Expressions />
+                      <WhereConditionTree />
+                      <HavingConditionTree />
+                      <KnownDataTypes>
+                        <Item Name="provider" IsExpression="false" DataType="Text" />
+                        <Item Name="avg_transaction_amount" IsExpression="false" DataType="Number" />
+                        <Item Name="avg_card_transactions_per_mid_per_year" IsExpression="false" DataType="Number" />
+                        <Item Name="avg_card_processing_volume_per_mid_per_year" IsExpression="false" DataType="Number" />
+                        <Item Name="total_card_transactions_per_year" IsExpression="false" DataType="Number" />
+                        <Item Name="total_card_volume_per_year" IsExpression="false" DataType="Number" />
+                      </KnownDataTypes>
+                    </QueryModel>
+                    <Parameters />
+                  </Query>
+                </ImportSqlAction>
+              </Actions>
+              <AnalysisView LayoutMode="Filters" />
+            </Table>
+            <Table Name="Test_Calculations" Left="314" Top="311" Width="525" Height="230" IsMinimized="false" ActiveActionIndex="7">
+              <Actions>
+                <DeriveTableAction SourceTableName="public.flat_rate_pricing 1" IsConditional="false" />
+                <AddColumnsAction ColumnExistsOption="Rename">
+                  <Columns>
+                    <NameExpressionPair Name="Column">
+                      <Expression Value="[cost_effective_rate] +[avg_transaction_amount] *[cost_from_payment_partner] -[revenue_effective_rate]" Type="Expression" />
+                    </NameExpressionPair>
+                  </Columns>
+                  <InsertPosition Position="AfterColumn" AfterColumnName="revenue_effective_rate" />
+                </AddColumnsAction>
+                <RenameColumnsAction>
+                  <Names>
+                    <NamePair Name1="Column" Name2="Test_Cal_1" />
+                  </Names>
+                </RenameColumnsAction>
+                <AddColumnsAction ColumnExistsOption="Rename">
+                  <Columns>
+                    <NameExpressionPair Name="Column">
+                      <Expression Value="[avg_card_processing_volume_per_mid_per_year] *[revenue] /[Test_Cal_1]" Type="Expression" />
+                    </NameExpressionPair>
+                  </Columns>
+                  <InsertPosition Position="AfterColumn" AfterColumnName="total_processing_cost" />
+                </AddColumnsAction>
+                <RenameColumnsAction>
+                  <Names>
+                    <NamePair Name1="Column" Name2="Test_Cal_2" />
+                  </Names>
+                </RenameColumnsAction>
+                <KeepRemoveColumnsAction Mode="Keep">
+                  <ColumnNames>
+                    <Item>provider</Item>
+                    <Item>Test_Cal_1</Item>
+                    <Item>Test_Cal_2</Item>
+                  </ColumnNames>
+                </KeepRemoveColumnsAction>
+                <KeepRemoveColumnsAction Mode="Keep">
+                  <ColumnNames>
+                    <Item>provider</Item>
+                    <Item>Test_Cal_1</Item>
+                    <Item>Test_Cal_2</Item>
+                  </ColumnNames>
+                </KeepRemoveColumnsAction>
+                <ExportExcelAction AutoStatus="true" ExportMode="Create" CreateNamedRange="false" CreateTable="false" FileExistsOption="HaltProjectExecution">
+                  <FileName Value="test_export2.xlsx" Type="Path" />
+                  <WorksheetName Value="Sheet1" Type="Text" />
+                </ExportExcelAction>
+              </Actions>
+              <AnalysisView LayoutMode="Filters" />
+            </Table>
+            <Table Name="Transpose" Left="1111" Top="141" Width="274" Height="400" IsMinimized="false" ActiveActionIndex="3">
+              <Actions>
+                <DeriveTableAction SourceTableName="public.flat_rate_pricing 1" IsConditional="false" />
+                <UnpivotAction LabelsColumnName="Columns">
+                  <ExceptColumnNames>
+                    <Item>provider</Item>
+                  </ExceptColumnNames>
+                </UnpivotAction>
+                <SortAction>
+                  <SortColumns>
+                    <SortColumn ColumnName="provider" SortOrder="Ascending" />
+                  </SortColumns>
+                </SortAction>
+                <PivotAction LabelsColumnName="provider" DataColumnName="Data" Aggregation="Any" PreserveFormatting="false" />
+              </Actions>
+              <AnalysisView LayoutMode="Filters" />
+            </Table>
+          </ModelObjects>
+        </Group>
+      </Groups>
+      <Parameters />
+      <Report UseCustomFileNameForPdfExport="false" ShowPageBorders="true">
+        <Pages>
+          <Page Name="Page 1" IncludeInReport="true">
+            <ReportObjects>
+              <ReportTable Left="1036" Top="100" Width="274" Height="400" ShowTitle="true" ShowAnnotation="false" ModelObjectName="Transpose" TotalsLabel="Total">
+                <Columns />
+                <ColumnTotals />
+              </ReportTable>
+              <ReportTable Left="95" Top="114" Width="286" Height="129" ShowTitle="true" ShowAnnotation="false" ModelObjectName="Test_Calculations" TotalsLabel="Total">
+                <Columns />
+                <ColumnTotals />
+              </ReportTable>
+            </ReportObjects>
+          </Page>
+        </Pages>
+        <PageSetup Orientation="Landscape" Margin="Narrow" Size="Letter" />
+      </Report>
+    </Module>
+  </Modules>
+  <ProtectedDataConnectors />
+  <Resources />
+</Project>

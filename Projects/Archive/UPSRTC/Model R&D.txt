@@ -1,0 +1,8 @@
+Jumpstart Models 
+
+1. TabTransformer Regression - PyTorch
+2. AutoGluon Tabular Regression - Autogluon (AWS)
+3. CatBoost Regression - CatBoost (AWS)
+4. LightGBM Regression - LightGBM (AWS)
+
+Note- Only checked for regression models, need to study if classification or time-series forecasting.

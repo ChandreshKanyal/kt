@@ -1,0 +1,76 @@
+CREATE TABLE DATA_EXTRACTION_CONFIG_MASTER
+( REC_ID SERIAL PRIMARY KEY,
+	REC_CRD_DATE DATE DEFAULT CURRENT_TIMESTAMP,
+	ACTIVE_FLAG BOOLEAN DEFAULT TRUE,
+	EXT_TABLE_NAME VARCHAR,
+	EXT_TYPE VARCHAR,
+	EXT_COLUMNS_LIST VARCHAR,
+	EXT_CONDITION VARCHAR,
+	EXT_FILE_LOCATION VARCHAR,
+	EXT_FILE_DELIMITER VARCHAR,
+	INACTIVE_REASON VARCHAR
+);
+
+INSERT INTO DATA_EXTRACTION_CONFIG_MASTER 
+	(EXT_TABLE_NAME,EXT_TYPE, EXT_COLUMNS_LIST,EXT_CONDITION,EXT_FILE_LOCATION,EXT_FILE_DELIMITER )
+	VALUES ('afc_constant','Incremental', 'id, create_date, delete_date, key', NULL,'/tmp/testwrite/',';');
+
+DROP TABLE DATA_EXTRACTION_CONFIG_MASTER;
+
+CREATE OR REPLACE PROCEDURE SP_SRCDATAEXTRACT(EXTTYPE VARCHAR)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    qrystr TEXT;
+    extcondition TEXT;
+    extcolumn TEXT;
+    fileloc TEXT;
+	varexttype VARCHAR;
+	dbrec VARCHAR;
+	i RECORD;
+	filestr VARCHAR := TO_CHAR(CURRENT_TIMESTAMP,'DDMMYYYY_HH24MMSS');
+BEGIN
+IF UPPER(EXTTYPE) IN ('FULL','INCREMENTAL')
+THEN
+		varexttype := '('||quote_literal('FULL')||','||quote_literal('INCREMENTAL')||')';
+ELSIF UPPER(EXTTYPE) IN ('SINGLE')
+THEN
+		varexttype := '('||quote_literal('SINGLE')||')';
+ELSIF UPPER(EXTTYPE) IN ('ALL')
+THEN
+		varexttype := '('||quote_literal('FULL')||','||quote_literal('INCREMENTAL')||','||quote_literal('SINGLE')||')';
+ELSE 
+		RAISE EXCEPTION 'Invalid Argument';
+END IF;
+ 
+dbrec := 'SELECT * FROM DATA_EXTRACTION_CONFIG_MASTER WHERE ACTIVE_FLAG IS TRUE AND UPPER(EXT_TYPE) IN '|| varexttype;
+ 
+--RAISE NOTICE 'Extraction Type Selected: %',varexttype;
+ 
+--RAISE NOTICE 'Loop For: %',dbrec;
+ 
+FOR i IN EXECUTE dbrec
+LOOP
+ 
+	IF i.EXT_CONDITION ='' OR i.EXT_CONDITION IS NULL
+	THEN
+		extcondition = '';
+	ELSE 
+		extcondition = i.EXT_CONDITION;
+	END IF;
+	IF i.EXT_COLUMNS_LIST ='' OR i.EXT_COLUMNS_LIST IS NULL
+	THEN
+		extcolumn = '*';
+	ELSE 
+		extcolumn = i.EXT_COLUMNS_LIST;
+	END IF;
+	fileloc := quote_literal(i.EXT_FILE_LOCATION || i.EXT_TABLE_NAME ||'_'||filestr|| '.csv');
+	qrystr := 'COPY (SELECT '||extcolumn||' FROM '|| i.EXT_TABLE_NAME ||' '||extcondition ||') TO '||fileloc||
+			  ' WITH DELIMITER '||quote_literal(i.EXT_FILE_DELIMITER) || ' CSV HEADER';
+	--RAISE NOTICE 'Extraction Type Selected: %',qrystr;
+	EXECUTE qrystr;
+	END LOOP;
+END;
+$$;
+ 
+CALL SP_SRCDATAEXTRACT('Incremental');

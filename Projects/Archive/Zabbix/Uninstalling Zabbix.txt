@@ -1,0 +1,71 @@
+Uninstalling Zabbix 
+
+1. Checking if Zabbix exists
+	dpkg -l | grep Zabbix 
+
+2. Check if any processes are running 
+	ps aux | grep Zabbix 
+
+3. Check if components are active (Server, Agent, DB- MySQL, Proxy)
+	systemctl status zabbix-server 
+	systemctl status zabbix-agent
+	systemctl status zabbix-proxy
+	systemctl status MySQL 
+
+4. Stopping all the components 
+	sudo systemctl stop zabbix-agent zabbix-server
+
+5. Disabling all components 
+	sudo systemctl disable zabbix-agent zabbix-server
+
+6. Check if any Zabbix processes are currently running 
+	pgrep -a Zabbix
+
+7. Removing all Zabbix packages 
+	sudo apt remove --purge \
+	zabbix-server-mysql \
+	zabbix-agent \
+	zabbix-frontend-php \
+	zabbix-apache-conf \
+	zabbix-get \
+	zabbix-sql-scripts \
+	zabbix-release
+
+8. Remove unused dependencies 
+	sudo apt autoremove --purge
+	sudo apt autoclean
+
+9. Remove leftover Zabbix directories 
+	sudo rm -rf /etc/zabbix
+	sudo rm -rf /var/log/zabbix
+	sudo rm -rf /var/lib/Zabbix
+
+10. Remove Zabbix APT 
+	sudo rm -f /etc/apt/sources.list.d/zabbix.list
+	sudo apt update
+
+11. Remove Zabbix Database 
+	sudo mysql -u root -p
+	DROP DATABASE zabbix;
+	DROP USER 'zabbix'@'localhost';
+	EXIT;
+
+12. Final check 
+	dpkg -l | grep zabbix
+	pgrep -a zabbix
+	systemctl list-unit-files | grep zabbix
+	ls /etc/zabbix
+
+to check specification of linux server 
+
+lscpu
+free -h
+lsblk
+df -h
+uname -a
+systemd-detect-virt
+
+to reboot linux server
+
+Sudo reboot
+

@@ -1,0 +1,127 @@
+CREATE OR REPLACE PROCEDURE merge_route_master()
+AS $$
+DECLARE
+  v_error_message TEXT;
+  v_error_code TEXT;
+  v_proc_time TIMESTAMP := CURRENT_TIMESTAMP;
+  v_row_count INT := 0;
+  v_start_time TIMESTAMP := CURRENT_TIMESTAMP;
+  v_end_time TIMESTAMP;
+BEGIN
+  -- Step 1: Create a temporary table for staging data
+  CREATE TABLE raw_source_data.temp_route_data AS
+  WITH max_route_length AS (
+      SELECT bus_route_id, MAX(distance) AS max_distance
+      FROM raw_data.bus_route_stop
+      GROUP BY bus_route_id
+  ),
+  depot_info AS (
+      -- Use ROW_NUMBER() to select the first available depot info for each route
+      SELECT
+r.id AS ROUTE_ID,
+          ts.bus_depot_id AS DEPOT_ID,
+          d.name AS DEPOT_NAME,
+          ROW_NUMBER() OVER (PARTITION BY r.id ORDER BY ts.bus_depot_id) AS rn
+      FROM raw_data.bus_route r
+      LEFT JOIN raw_data.bus_trip_schedule ts ON r.id = ts.bus_route_id
+      LEFT JOIN raw_data.bus_depot d ON ts.bus_depot_id = d.id
+  ),
+  stop_info AS (
+      -- Get route stop details
+      SELECT DISTINCT
+          rs.bus_route_id AS ROUTE_ID,
+          rs.bus_stop_id AS ROUTE_STOP_ID,  -- Updated to bus_stop_id
+          s.name AS ROUTE_STOP_NAME,
+          rs.bus_route_order AS ROUTE_STOP_ORDER
+      FROM raw_data.bus_route_stop rs
+      LEFT JOIN raw_data.bus_stop s ON rs.bus_stop_id = s.id  
+  )
+  SELECT DISTINCT
+r.id AS ROUTE_ID,
+      r.name AS ROUTE_NAME,
+      r.route_type AS ROUTE_TYPE,
+      r.create_date AS CREATE_DATE,
+      r.source_stop AS SOURCE_STOP_ID,       
+      r.destination_stop AS DESTINATION_STOP_ID, 
+      src.name AS SOURCE_NAME,              
+      dest.name AS DESTINATION_NAME,          
+      rl.max_distance AS ROUTE_LENGTH,        
+      di.DEPOT_ID,                            
+      di.DEPOT_NAME,                          
+      si.ROUTE_STOP_ID,                      
+      si.ROUTE_STOP_NAME,                     
+      si.ROUTE_STOP_ORDER                     
+  FROM raw_data.bus_route r
+  LEFT JOIN raw_data.bus_stop src ON r.source_stop = src.id
+  LEFT JOIN raw_data.bus_stop dest ON r.destination_stop = dest.id
+  LEFT JOIN max_route_length rl ON r.id = rl.bus_route_id -- Join with max_route_length to get the max distance
+  LEFT JOIN (SELECT * FROM depot_info WHERE rn = 1) di ON r.id = di.ROUTE_ID -- Filter to get the first depot info per route
+  LEFT JOIN stop_info si ON r.id = si.ROUTE_ID; -- Join with stop_info to get the stop details
+  -- Get the number of rows fetched into the temporary table
+  SELECT COUNT(*) INTO v_row_count FROM raw_source_data.temp_route_data;
+  -- Step 2: Begin the transaction for final insert
+  BEGIN
+      -- Insert into the master table from the temporary table
+      INSERT INTO raw_source_data.MST_ROUTE_MASTER (
+          ROUTE_ID,
+          ROUTE_NAME,
+          ROUTE_TYPE,
+          CREATE_DATE,
+          SOURCE_STOP_ID,             
+          DESTINATION_STOP_ID,        
+          SOURCE_NAME,                
+          DESTINATION_NAME,           
+          ROUTE_LENGTH,              
+          DEPOT_ID,                   
+          DEPOT_NAME,               
+          ROUTE_STOP_ID,              
+          ROUTE_STOP_NAME,          
+          ROUTE_STOP_ORDER          
+      )
+      SELECT
+          ROUTE_ID,
+          ROUTE_NAME,
+          ROUTE_TYPE,
+          CREATE_DATE,
+          SOURCE_STOP_ID,             
+          DESTINATION_STOP_ID,       
+          SOURCE_NAME,             
+          DESTINATION_NAME,        
+          ROUTE_LENGTH,             
+          DEPOT_ID,                 
+          DEPOT_NAME,               
+          ROUTE_STOP_ID,           
+          ROUTE_STOP_NAME,            
+          ROUTE_STOP_ORDER           
+      FROM raw_source_data.temp_route_data;
+      -- Commit the transaction if everything is successful
+      COMMIT;
+  EXCEPTION WHEN OTHERS THEN
+      -- Rollback the transaction in case of an error
+      ROLLBACK;
+      -- Log the error message and code
+      v_error_message := SQLERRM;
+      v_error_code := SQLSTATE;
+      INSERT INTO raw_source_data.error_log (procedure_name, error_message, error_code, rec_date, last_processed_time)
+      VALUES ('merge_route_master - Final Insertion', v_error_message, v_error_code, CURRENT_TIMESTAMP, v_proc_time);
+      RETURN;
+  END;
+  -- Drop the temporary table
+  DROP TABLE IF EXISTS raw_source_data.temp_route_data;
+  -- Step 3: Tracking Data Ingestion
+  BEGIN
+      v_end_time := CURRENT_TIMESTAMP;
+      INSERT INTO raw_source_data.data_ingestion_tracking (table_name, last_processed, row_count, start_time, end_time, rec_date)
+      VALUES ('MST_ROUTE_MASTER', v_end_time, v_row_count, v_start_time, v_end_time, v_proc_time);
+  EXCEPTION WHEN OTHERS THEN
+      v_error_message := SQLERRM;
+      v_error_code := SQLSTATE;
+      INSERT INTO raw_source_data.error_log (procedure_name, error_message, error_code, rec_date, last_processed_time)
+      VALUES ('merge_route_master - Data Tracking', v_error_message, v_error_code, CURRENT_TIMESTAMP, v_proc_time);
+  END;
+  RAISE INFO 'Merge Route Master completed successfully with % rows inserted.', v_row_count;
+END;
+$$ LANGUAGE plpgsql;
+-- Step 4: Call the procedure to execute it
+CALL merge_route_master();
+
